@@ -1,20 +1,20 @@
 <template>
   <div>
-   <head-top></head-top>
-    <play class=""></play>
+    <head-top></head-top>
+    <div>
+      a
+    </div>
   </div>
 </template>
 
 <script>
 import headTop from '@/components/common/head'
-import play from '@/components/play/play'
 export default {
   data () {
     return {
     }
   },
   components: {
-    play,
     headTop
   },
 

@@ -2,45 +2,133 @@
   <div>
     <div>
       <div class="coverBox"
-           style="background-image: url(&quot;http://p4.music.126.net/YFz7JOGYtid5MoecLO6Otw==/3412884134806295.jpg?param=550y550&quot;);"></div>
+           :style="{backgroundImage: 'url('+music.cover+')'}"></div>
       <div class="coverBg"></div>
     </div>
     <div class="player-page">
-      <h1 class="caption"><a href="#/list">我的私人音乐坊</a></h1>
+      <h1 class="caption"><router-link to="musicList">Home</router-link></h1>
       <div class="mt20 row">
-        <div class="controll-wrapper"><h2 class="music-title">FXXK IT</h2>
-          <h3 class="music-artist mt10">bigbang</h3>
+        <div class="controll-wrapper"><h2 class="music-title">{{music.title}}</h2>
+          <h3 class="music-artist mt10">{{music.artist}}</h3>
           <div class="row mt20">
             <div class="volume-container"><i class="icon-volume rt" style="top: 5px; left: -5px;"></i>
               <div class="volume-wrapper">
-                <div class="components-progress">
-                  <div class="progress" style="width: 80%; background: red;"></div>
+                <div class="components-progress" >
+                  <div class="progress" :style="volumeProgressStyle" ></div>
                 </div>
               </div>
             </div>
           </div>
           <div style="height: 10px; line-height: 10px;">
-            <div class="components-progress">
-              <div class="progress" style="width: 0.627137%;"></div>
+            <div class="components-progress" @click="dragProgress" ref="musicProgress">
+              <div class="progress" :style="musicProgressStyle"></div>
             </div>
-            <div class="left-time -col-auto"></div>
+            <div class="left-time -col-auto">{{formatCurTime}}</div>
           </div>
           <div class="mt35 row">
-            <div><i class="icon prev"></i><i class="icon ml20 play"></i><i class="icon next ml20"></i></div>
+            <div><i class="icon prev" @click="prevClickEvent" ></i><i class="icon ml20" :class="[isPlay? 'pause':'play']" @click="playClickEvent"></i><i class="icon next ml20" @click="nextClickEvent"></i></div>
             <div class="-col-auto"><i class="icon repeat-cycle"></i></div>
           </div>
         </div>
-        <div class="-col-auto cover"><img class="pause"
-                                          src="http://p4.music.126.net/YFz7JOGYtid5MoecLO6Otw==/3412884134806295.jpg?param=130y130"
-                                          alt="FXXK IT"></div>
+        <div class="-col-auto cover"><img class="pause"  :src="music.cover"
+                                          :alt="music.title"></div>
       </div>
     </div>
+
+    <!-- 隐藏的audio标签 -->
+    <audio v-bind:src="music.file" v-bind:autoplay="isPlay" ref="audio"></audio>
   </div>
 
 </template>
 
 <script>
-export default {}
+import {MUSIC_LIST} from '@/data/data'
+export default {
+  data () {
+    return {
+      music: null,
+      isPlay: true,
+      musicList: MUSIC_LIST,
+      curTime: 0,
+      duration: 0,
+      volumeProgressStyle: {width: '80%'}
+    }
+  },
+  created () { this.music = this.musicList[2] },
+  mounted () {
+    this.audio = this.$refs.audio
+    this.audio.addEventListener('loadedmetadata', () => {
+      this.curTime = parseInt(this.audio.currentTime)
+      this.duration = parseInt(this.audio.duration)
+    })
+    this.audio.addEventListener('play', () => {
+      setInterval(() => {
+        this.curTime = this.audio.currentTime
+      }, 1000)
+      this.curTime = this.audio.currentTime
+    })
+    this.audio.addEventListener('ended', () => {
+      this.nextClickEvent()
+    })
+  },
+  computed: {
+    formatCurTime: function () {
+      return this.transformTime(this.curTime)
+    },
+    musicProgressStyle: function () {
+      var width = '0%'
+      if (this.duration) {
+        width = (this.curTime / this.duration) * 100 + '%'
+      }
+      return {
+        width: width
+      }
+    }
+  },
+  methods: {
+    // 点击图标刷新页面
+    playClickEvent: function (event) {
+      this.isPlay = !this.isPlay
+      if (this.audio.paused) {
+        this.audio.play()
+      } else {
+        this.audio.pause()
+      }
+    },
+    prevClickEvent: function () {
+      alert('切换为上一首歌')
+    },
+    nextClickEvent: function () {
+      var id = this.music.id
+      this.music = this.musicList.find(function (element) {
+        console.log(element)
+        return element.id === parseInt(id) + 1
+      })
+      /* 找不到id，从第一首歌开始播放 */
+      if (!this.music) {
+        this.music = this.musicList[0]
+      }
+    },
+    dragProgress (event) {
+      var proBlock = this.$refs.musicProgress && this.$refs.musicProgress.getBoundingClientRect()
+      var start = proBlock.left
+      var end = event.clientX
+      var width = proBlock.width
+      var length = parseFloat(end) - parseFloat(start)
+      var percent = parseFloat(length / width)
+      this.audio.currentTime = this.audio.duration * percent
+      this.currentTime = this.audio.currentTime
+    },
+    transformTime (seconds) {
+      let m, s
+      m = Math.floor(seconds / 60)
+      m = m.toString().length === 1 ? ('0' + m) : m
+      s = Math.floor(seconds - 60 * m)
+      s = s.toString().length === 1 ? ('0' + s) : s
+      return m + ':' + s
+    }
+  }
+}
 
 </script>
 
@@ -138,7 +226,7 @@ export default {}
   }
   .player-page .left-time {
     font-size: 14px;
-    color: #999;
+    color: #FFF;
     font-weight: 400;
     width: 60px;
     margin-top: 10px;
@@ -248,7 +336,6 @@ export default {}
     transition: all .3s;
   }
   .components-progress .progress {
-    width: 20%;
     height: 3px;
     background: #2f9842;
     margin-top: 40px;
