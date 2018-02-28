@@ -1,0 +1,6 @@
+export const TOGGLE_MUSIC = 'TOGGLE_MUSIC'
+export const GET_MUSIC_LIST = 'GET_MUSIC_LIST'
+export const PLAY_MUSIC = 'PLAY_MUSIC'
+export const SET_AUDIO_DOM = 'SET_AUDIO_DOM'
+export const SET_MUSIC_CURTIME = 'SET_MUSIC_CURTIME'
+export const SET_MUSIC_DURATION = 'SET_MUSIC_DURATION'

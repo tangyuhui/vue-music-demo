@@ -2,14 +2,14 @@
   <div>
     <div>
       <div class="coverBox"
-           :style="{backgroundImage: 'url('+music.cover+')'}"></div>
+           :style="{backgroundImage: 'url('+curMusic.cover+')'}"></div>
       <div class="coverBg"></div>
     </div>
     <div class="player-page">
       <h1 class="caption"><router-link to="musicList">Home</router-link></h1>
       <div class="mt20 row">
-        <div class="controll-wrapper"><h2 class="music-title">{{music.title}}</h2>
-          <h3 class="music-artist mt10">{{music.artist}}</h3>
+        <div class="controll-wrapper"><h2 class="music-title">{{curMusic.title}}</h2>
+          <h3 class="music-artist mt10">{{curMusic.artist}}</h3>
           <div class="row mt20">
             <div class="volume-container"><i class="icon-volume rt" style="top: 5px; left: -5px;"></i>
               <div class="volume-wrapper">
@@ -26,52 +26,31 @@
             <div class="left-time -col-auto">{{formatCurTime}}</div>
           </div>
           <div class="mt35 row">
-            <div><i class="icon prev" @click="prevClickEvent" ></i><i class="icon ml20" :class="[isPlay? 'pause':'play']" @click="playClickEvent"></i><i class="icon next ml20" @click="nextClickEvent"></i></div>
+            <div><i class="icon prev" @click="prevClickEvent" ></i><i class="icon ml20" :class="[isPlaying? 'pause':'play']" @click="playClickEvent"></i><i class="icon next ml20" @click="nextClickEvent"></i></div>
             <div class="-col-auto"><i class="icon repeat-cycle"></i></div>
           </div>
         </div>
-        <div class="-col-auto cover"><img class="pause"  :src="music.cover"
-                                          :alt="music.title"></div>
+        <div class="-col-auto cover"><img class="pause"  :src="curMusic.cover"
+                                          :alt="curMusic.title"></div>
       </div>
     </div>
-
-    <!-- 隐藏的audio标签 -->
-    <audio v-bind:src="music.file" v-bind:autoplay="isPlay" ref="audio"></audio>
   </div>
 
 </template>
 
 <script>
-import {MUSIC_LIST} from '@/data/data'
+import {mapState, mapMutations} from 'vuex'
 export default {
   data () {
     return {
-      music: null,
-      isPlay: true,
-      musicList: MUSIC_LIST,
-      curTime: 0,
-      duration: 0,
       volumeProgressStyle: {width: '80%'}
     }
   },
-  created () { this.music = this.musicList[2] },
   mounted () {
-    this.audio = this.$refs.audio
-    this.audio.addEventListener('loadedmetadata', () => {
-      this.curTime = parseInt(this.audio.currentTime)
-      this.duration = parseInt(this.audio.duration)
-    })
-    this.audio.addEventListener('play', () => {
-      setInterval(() => {
-        this.curTime = this.audio.currentTime
-      }, 1000)
-      this.curTime = this.audio.currentTime
-    })
-    this.audio.addEventListener('ended', () => {
-      this.nextClickEvent()
-    })
+
   },
   computed: {
+    ...mapState(['isPlaying', 'curMusic', 'musicData', 'curTime', 'duration', 'audioDom']),
     formatCurTime: function () {
       return this.transformTime(this.curTime)
     },
@@ -86,28 +65,22 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['TOGGLE_MUSIC', 'PLAY_MUSIC', 'SET_MUSIC_CURTIME', 'SET_MUSIC_DURATION']),
     // 点击图标刷新页面
     playClickEvent: function (event) {
-      this.isPlay = !this.isPlay
-      if (this.audio.paused) {
-        this.audio.play()
+      this.PLAY_MUSIC(!this.isPlaying)
+      if (this.audioDom.paused) {
+        this.audioDom.play()
       } else {
-        this.audio.pause()
+        this.audioDom.pause()
       }
     },
     prevClickEvent: function () {
-      alert('切换为上一首歌')
+      this.TOGGLE_MUSIC(parseInt(this.curMusic.id - 1))
     },
     nextClickEvent: function () {
-      var id = this.music.id
-      this.music = this.musicList.find(function (element) {
-        console.log(element)
-        return element.id === parseInt(id) + 1
-      })
-      /* 找不到id，从第一首歌开始播放 */
-      if (!this.music) {
-        this.music = this.musicList[0]
-      }
+      /* 播放下一首歌 */
+      this.TOGGLE_MUSIC(parseInt(this.curMusic.id + 1))
     },
     dragProgress (event) {
       var proBlock = this.$refs.musicProgress && this.$refs.musicProgress.getBoundingClientRect()
@@ -116,8 +89,8 @@ export default {
       var width = proBlock.width
       var length = parseFloat(end) - parseFloat(start)
       var percent = parseFloat(length / width)
-      this.audio.currentTime = this.audio.duration * percent
-      this.currentTime = this.audio.currentTime
+      this.audioDom.currentTime = this.audioDom.duration * percent
+      this.SET_MUSIC_CURTIME(this.audioDom.currentTime)
     },
     transformTime (seconds) {
       let m, s
