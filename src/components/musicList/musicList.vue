@@ -42,7 +42,6 @@ export default {
     addToMusicList (id) {
       let self = this
       this.getMusicById(id).then(function (results) {
-        console.log(results)
         if (results[1] == null) {
           alert('音乐资源不存在')
         } else {

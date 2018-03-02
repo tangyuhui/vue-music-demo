@@ -35,14 +35,6 @@ export default {
   computed: {
     ...mapState(['isPlaying', 'musicData', 'curTime', 'duration', 'curMusicUrl']),
     ...mapGetters(['curMusic'])
-  },
-  watch: {
-    curMusicUrl: function (val, oldVal) {
-      console.log('curMusicUrl变化了')
-      if (this.curMusicUrl == null && this.musicData && this.musicData.length > 0) {
-        this.NEXT_MUSIC()
-      }
-    }
   }
 }
 </script>

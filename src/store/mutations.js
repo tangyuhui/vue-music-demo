@@ -67,5 +67,6 @@ export default {
     } else {
       state.curIndex = index
     }
+    state.isPlaying = true
   }
 }
