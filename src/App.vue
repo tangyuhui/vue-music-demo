@@ -2,12 +2,12 @@
   <div id="app">
     <router-view />
     <!-- 隐藏的audio标签 -->
-    <audio v-bind:src="curMusic.file" v-bind:autoplay="isPlaying" ref="audio" @timeupdate="updateTime"></audio>
+    <audio v-bind:src="curMusicUrl?curMusicUrl:''" v-bind:autoplay="isPlaying" ref="audio" @timeupdate="updateTime"></audio>
   </div>
 </template>
 
 <script>
-import {mapState, mapActions, mapMutations} from 'vuex'
+import {mapState, mapActions, mapMutations, mapGetters} from 'vuex'
 export default {
   name: 'App',
   created () {
@@ -26,18 +26,24 @@ export default {
     })
   },
   methods: {
-    ...mapActions([
-      'getMusicList'
-    ]),
-    ...mapMutations(['TOGGLE_MUSIC', 'SET_AUDIO_DOM', 'SET_MUSIC_CURTIME', 'SET_MUSIC_DURATION']),
+    ...mapActions(['getMusicList']),
+    ...mapMutations(['TOGGLE_MUSIC', 'SET_AUDIO_DOM', 'SET_MUSIC_CURTIME', 'SET_MUSIC_DURATION', 'NEXT_MUSIC']),
     updateTime () {
       this.SET_MUSIC_CURTIME(this.audio.currentTime)
     }
   },
   computed: {
-    ...mapState(['isPlaying', 'curMusic', 'musicData', 'curTime', 'duration'])
+    ...mapState(['isPlaying', 'musicData', 'curTime', 'duration', 'curMusicUrl']),
+    ...mapGetters(['curMusic'])
+  },
+  watch: {
+    curMusicUrl: function (val, oldVal) {
+      console.log('curMusicUrl变化了')
+      if (this.curMusicUrl == null && this.musicData && this.musicData.length > 0) {
+        this.NEXT_MUSIC()
+      }
+    }
   }
-
 }
 </script>
 

@@ -8,11 +8,13 @@ Vue.use(Vuex)
 
 const state = {
   isPlaying: true,
-  curMusic: null,
-  musicData: null,
+  musicData: [],
   curTime: 0,
   duration: 0,
-  audioDom: null
+  audioDom: null,
+  curMusicUrl: null,
+  musicDetail: null,
+  curIndex: 0
 }
 
 export default new Vuex.Store({

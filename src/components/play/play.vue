@@ -2,14 +2,14 @@
   <div>
     <div>
       <div class="coverBox"
-           :style="{backgroundImage: 'url('+curMusic.cover+')'}"></div>
+           :style="{backgroundImage: 'url('+(musicDetail && musicDetail.al && musicDetail.al.picUrl)+')'}"></div>
       <div class="coverBg"></div>
     </div>
     <div class="player-page">
       <h1 class="caption"><router-link to="musicList">Home</router-link></h1>
       <div class="mt20 row">
-        <div class="controll-wrapper"><h2 class="music-title">{{curMusic.title}}</h2>
-          <h3 class="music-artist mt10">{{curMusic.artist}}</h3>
+        <div class="controll-wrapper"><h2 class="music-title">{{musicDetail&&musicDetail.name}}</h2>
+          <h3 class="music-artist mt10">{{getArtist}}</h3>
           <div class="row mt20">
             <div class="volume-container"><i class="icon-volume rt" style="top: 5px; left: -5px;"></i>
               <div class="volume-wrapper">
@@ -30,8 +30,8 @@
             <div class="-col-auto"><i class="icon repeat-cycle"></i></div>
           </div>
         </div>
-        <div class="-col-auto cover"><img class="pause"  :src="curMusic.cover"
-                                          :alt="curMusic.title"></div>
+        <div class="-col-auto cover"><img class="pause"  :src="musicDetail&&musicDetail.al&&musicDetail.al.picUrl"
+                                          :alt="musicDetail&&musicDetail.name"></div>
       </div>
     </div>
   </div>
@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import {mapState, mapMutations} from 'vuex'
+import {mapState, mapMutations, mapGetters} from 'vuex'
 export default {
   data () {
     return {
@@ -47,10 +47,10 @@ export default {
     }
   },
   mounted () {
-
   },
   computed: {
-    ...mapState(['isPlaying', 'curMusic', 'musicData', 'curTime', 'duration', 'audioDom']),
+    ...mapState(['isPlaying', 'curMusic', 'musicData', 'curTime', 'duration', 'audioDom', 'musicDetail']),
+    ...mapGetters(['getArtist']),
     formatCurTime: function () {
       return this.transformTime(this.curTime)
     },
@@ -65,22 +65,25 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['TOGGLE_MUSIC', 'PLAY_MUSIC', 'SET_MUSIC_CURTIME', 'SET_MUSIC_DURATION']),
+    ...mapMutations(['LAST_MUSIC', 'NEXT_MUSIC', 'PLAY_MUSIC', 'SET_MUSIC_CURTIME', 'SET_MUSIC_DURATION']),
     // 点击图标刷新页面
     playClickEvent: function (event) {
-      this.PLAY_MUSIC(!this.isPlaying)
       if (this.audioDom.paused) {
         this.audioDom.play()
+        this.PLAY_MUSIC(true)
       } else {
         this.audioDom.pause()
+        this.PLAY_MUSIC(false)
       }
     },
     prevClickEvent: function () {
-      this.TOGGLE_MUSIC(parseInt(this.curMusic.id - 1))
+      this.LAST_MUSIC()
+      this.PLAY_MUSIC(true)
     },
     nextClickEvent: function () {
       /* 播放下一首歌 */
-      this.TOGGLE_MUSIC(parseInt(this.curMusic.id + 1))
+      this.NEXT_MUSIC()
+      this.PLAY_MUSIC(true)
     },
     dragProgress (event) {
       var proBlock = this.$refs.musicProgress && this.$refs.musicProgress.getBoundingClientRect()
