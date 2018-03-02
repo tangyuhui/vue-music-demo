@@ -30,7 +30,7 @@
             <div class="-col-auto"><i class="icon repeat-cycle"></i></div>
           </div>
         </div>
-        <div class="-col-auto cover"><img class="pause"  :src="musicDetail&&musicDetail.al&&musicDetail.al.picUrl"
+        <div class="-col-auto cover"><img :class="{pause:!isPlaying}"  :src="musicDetail&&musicDetail.al&&musicDetail.al.picUrl"
                                           :alt="musicDetail&&musicDetail.name"></div>
       </div>
     </div>
