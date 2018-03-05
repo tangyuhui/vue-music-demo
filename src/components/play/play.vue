@@ -13,8 +13,8 @@
           <div class="row mt20">
             <div class="volume-container"><i class="icon-volume rt" style="top: 5px; left: -5px;"></i>
               <div class="volume-wrapper">
-                <div class="components-progress" >
-                  <div class="progress" :style="volumeProgressStyle" ></div>
+                <div class="components-progress"   @click="adjustVolume"  ref="volumeControl" >
+                  <div class="progress" :style="volumnStyle"></div>
                 </div>
               </div>
             </div>
@@ -43,7 +43,7 @@ import {mapState, mapMutations, mapGetters} from 'vuex'
 export default {
   data () {
     return {
-      volumeProgressStyle: {width: '80%'}
+      volumnWidth: '80%'
     }
   },
   mounted () {
@@ -61,6 +61,11 @@ export default {
       }
       return {
         width: width
+      }
+    },
+    volumnStyle: function () {
+      return {
+        width: this.volumnWidth
       }
     }
   },
@@ -102,6 +107,17 @@ export default {
       s = Math.floor(seconds - 60 * m)
       s = s.toString().length === 1 ? ('0' + s) : s
       return m + ':' + s
+    },
+    adjustVolume (event) {
+      console.log('adjustVolume')
+      var volumeControl = this.$refs.volumeControl && this.$refs.volumeControl.getBoundingClientRect()
+      var start = volumeControl.left
+      var end = event.clientX
+      var width = volumeControl.width
+      var length = parseFloat(end) - parseFloat(start)
+      var percent = parseFloat(length / width)
+      this.audioDom.volume = percent
+      this.volumnWidth = (percent * 100) + '%'
     }
   }
 }
