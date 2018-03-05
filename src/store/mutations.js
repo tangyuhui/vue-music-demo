@@ -31,7 +31,6 @@ export default {
       state.curIndex = (state.curIndex + 1) % state.musicData.length
       state.curMusicUrl = state.musicData[state.curIndex].curMusicUrl
       state.musicDetail = state.musicData[state.curIndex].musicDetail
-      state.curTime = 0
       console.log('开始播放' + state.curIndex + state.musicDetail.name)
     }
   },

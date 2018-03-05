@@ -82,13 +82,22 @@ export default {
       }
     },
     prevClickEvent: function () {
-      this.PLAY_MUSIC(false)
+      this.toggleState()
       this.LAST_MUSIC()
     },
     nextClickEvent: function () {
       /* 播放下一首歌 */
-      this.PLAY_MUSIC(false)
+      this.toggleState()
       this.NEXT_MUSIC()
+    },
+    toggleState: function () {
+      if (this.isPlaying) {
+        this.audioDom.pause()
+        this.PLAY_MUSIC(false)
+      } else {
+        this.audioDom.play()
+        this.PLAY_MUSIC(true)
+      }
     },
     dragProgress (event) {
       var proBlock = this.$refs.musicProgress && this.$refs.musicProgress.getBoundingClientRect()

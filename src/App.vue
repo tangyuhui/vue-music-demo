@@ -2,7 +2,7 @@
   <div id="app">
     <router-view />
     <!-- 隐藏的audio标签 -->
-    <audio v-bind:src="curMusicUrl?curMusicUrl:''" @canplay="canPlaySong"  @error="loadError" v-bind:autoplay="isPlaying" ref="audio" @timeupdate="updateTime"></audio>
+    <audio v-bind:src="curMusicUrl?curMusicUrl:''" @canplay="canPlaySong"   @playing="ready"  @error="loadError" v-bind:autoplay="isPlaying" ref="audio" @timeupdate="updateTime"></audio>
   </div>
 </template>
 
@@ -35,6 +35,9 @@ export default {
       console.log('canPlay')
       this.PLAY_MUSIC(true)
       this.audio.play()
+    },
+    ready () {
+      console.log('playing')
     },
     loadError () {
       this.PLAY_MUSIC(false)
