@@ -23,6 +23,7 @@
 + 歌曲播放页
 
  播放音乐，支持上一首、下一首、播放、暂停、调节音量、音乐资源报错时自动切换下一首歌，返回音乐榜单界面
+ ![Screenshots](https://github.com/tangyuhui/vue-music-demo/tree/master/Screenshots/1.png)
 ## Build Setup
 
 ``` bash
