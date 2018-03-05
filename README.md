@@ -9,7 +9,7 @@
 + css3:css3动画及样式
 + webpack:自动化构建工具
 + api来源（感谢NeteaseCloudMusicApi项目提供的网易云接口的支持）
-
++ html5([audio标签](http://www.runoob.com/tags/ref-av-dom.html))
 ##功能介绍
 >v.1.0
 
