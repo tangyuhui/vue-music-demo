@@ -7,7 +7,9 @@ import {SET_MUSIC_LIST,
   SET_CUR_MUSIC_URL,
   ADD_MUSIC,
   NEXT_MUSIC,
-  LAST_MUSIC
+  LAST_MUSIC,
+  REMOVE_MUSIC,
+  CHOOSE_PLAYING_MUSIC
 } from './mutation-types.js'
 
 export default {
@@ -21,6 +23,7 @@ export default {
       }
       state.curMusicUrl = state.musicData[state.curIndex].curMusicUrl
       state.musicDetail = state.musicData[state.curIndex].musicDetail
+      state.curTime = 0
     }
   },
   [NEXT_MUSIC] (state) {
@@ -28,6 +31,8 @@ export default {
       state.curIndex = (state.curIndex + 1) % state.musicData.length
       state.curMusicUrl = state.musicData[state.curIndex].curMusicUrl
       state.musicDetail = state.musicData[state.curIndex].musicDetail
+      state.curTime = 0
+      console.log('开始播放' + state.curIndex + state.musicDetail.name)
     }
   },
   [SET_MUSIC_LIST] (state, musicData) {
@@ -68,5 +73,24 @@ export default {
       state.curIndex = index
     }
     state.isPlaying = true
+  },
+  [REMOVE_MUSIC] (state, index) {
+    if (state.musicData && state.musicData.length > 0) {
+      console.log('开始删除' + index)
+      state.musicData.splice(index, 1)
+      sessionStorage.setItem('musicData', JSON.stringify(state.musicData))
+    }
+  },
+  [CHOOSE_PLAYING_MUSIC] (state, index) {
+    if (state.musicData && state.musicData.length > 0) {
+      if (index === state.musicData.length) {
+        index = state.musicData.length - 1
+      }
+      state.musicDetail = state.musicData[index].musicDetail
+      state.curMusicUrl = state.musicData[index].curMusicUrl
+      console.log('开始播放' + state.musicDetail.name)
+      state.curTime = 0
+      state.curIndex = index
+    }
   }
 }

@@ -77,13 +77,13 @@ export default {
       }
     },
     prevClickEvent: function () {
+      this.PLAY_MUSIC(false)
       this.LAST_MUSIC()
-      this.PLAY_MUSIC(true)
     },
     nextClickEvent: function () {
       /* 播放下一首歌 */
+      this.PLAY_MUSIC(false)
       this.NEXT_MUSIC()
-      this.PLAY_MUSIC(true)
     },
     dragProgress (event) {
       var proBlock = this.$refs.musicProgress && this.$refs.musicProgress.getBoundingClientRect()

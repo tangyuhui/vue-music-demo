@@ -2,12 +2,12 @@
   <div id="app">
     <router-view />
     <!-- 隐藏的audio标签 -->
-    <audio v-bind:src="curMusicUrl?curMusicUrl:''" v-bind:autoplay="isPlaying" ref="audio" @timeupdate="updateTime"></audio>
+    <audio v-bind:src="curMusicUrl?curMusicUrl:''" @canplay="canPlaySong"  @error="loadError" v-bind:autoplay="isPlaying" ref="audio" @timeupdate="updateTime"></audio>
   </div>
 </template>
 
 <script>
-import {mapState, mapActions, mapMutations, mapGetters} from 'vuex'
+import {mapState, mapActions, mapMutations} from 'vuex'
 export default {
   name: 'App',
   created () {
@@ -22,19 +22,29 @@ export default {
     })
     this.audio.addEventListener('ended', () => {
       /* 播放下一首歌 */
-      this.TOGGLE_MUSIC(parseInt(this.curMusic.id + 1))
+      this.NEXT_MUSIC()
     })
   },
   methods: {
     ...mapActions(['getMusicList']),
-    ...mapMutations(['TOGGLE_MUSIC', 'SET_AUDIO_DOM', 'SET_MUSIC_CURTIME', 'SET_MUSIC_DURATION', 'NEXT_MUSIC']),
+    ...mapMutations(['SET_AUDIO_DOM', 'SET_MUSIC_CURTIME', 'SET_MUSIC_DURATION', 'NEXT_MUSIC', 'PLAY_MUSIC', 'REMOVE_MUSIC', 'CHOOSE_PLAYING_MUSIC']),
     updateTime () {
       this.SET_MUSIC_CURTIME(this.audio.currentTime)
+    },
+    canPlaySong () {
+      console.log('canPlay')
+      this.PLAY_MUSIC(true)
+      this.audio.play()
+    },
+    loadError () {
+      this.PLAY_MUSIC(false)
+      let index = this.curIndex
+      this.REMOVE_MUSIC(index)
+      this.CHOOSE_PLAYING_MUSIC(index)
     }
   },
   computed: {
-    ...mapState(['isPlaying', 'musicData', 'curTime', 'duration', 'curMusicUrl']),
-    ...mapGetters(['curMusic'])
+    ...mapState(['isPlaying', 'musicData', 'curTime', 'duration', 'curMusicUrl', 'musicDetail', 'curIndex'])
   }
 }
 </script>

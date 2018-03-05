@@ -1,7 +1,7 @@
 <template>
   <div>
    <head-top></head-top>
-    <play v-if="musicDetail"></play>
+    <play v-if="musicData&&musicData.length>0"></play>
     <div class="tips" v-else> <router-link :to="{ name: 'musicList'}" >当前播放列表为空，查看更多音乐...</router-link></div>
   </div>
 </template>
@@ -21,7 +21,7 @@ export default {
   },
 
   computed: {
-    ...mapState(['musicDetail'])
+    ...mapState(['musicData'])
   },
   methods: {
     // 点击图标刷新页面

@@ -42,16 +42,12 @@ export default {
     addToMusicList (id) {
       let self = this
       this.getMusicById(id).then(function (results) {
-        if (results[1] == null) {
-          alert('音乐资源不存在')
-        } else {
-          let musicMessage = {
-            curMusicUrl: results[1],
-            musicDetail: results[0]
-          }
-          self.ADD_MUSIC(musicMessage)
-          self.$router.push({ name: 'home' })
+        let musicMessage = {
+          curMusicUrl: results[1],
+          musicDetail: results[0]
         }
+        self.ADD_MUSIC(musicMessage)
+        self.$router.push({ name: 'home' })
       })
     }
   }
